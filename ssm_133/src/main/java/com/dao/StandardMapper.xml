@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.StandardMapper">
+	<select id="getListByCondition" parameterType="Map" resultType="Standard">
+		select id,std_num as stdNum,zhname,`version`,`keys`,release_date as releaseDate,impl_date as implDate,
+		package_path as packagePath from standard where std_num like concat('%',#{stdNum},'%') or zhname like concat('%',#{stdNum},'%') limit #{beginIndex},#{pageSize} 
+	</select>
+	<select id="getCounts" parameterType="String" resultType="Integer">
+		select count(1) from standard where std_num like concat('%',#{stdNum},'%') or zhname like concat('%',#{stdNum},'%')
+	</select>
+	<insert id="save" parameterType="Standard">
+		insert into standard(std_num,zhname,`version`,`keys`,release_date,impl_date,package_path) values(#{stdNum},#{zhname},#{version},#{keys},#{releaseDate},#{implDate},#{packagePath})
+	</insert>
+	<!-- 根据stdNum查询Standard对象是否存在 -->
+	<select id="getStandardByStdNum" parameterType="String" resultType="Standard">
+		select id,std_num as stdNum,zhname,`version`,`keys`,release_date as releaseDate,impl_date as implDate,
+		package_path as packagePath from standard where std_num=#{stdNum}
+	</select>
+	<!-- 更新 -->
+	<update id="updateStandard" parameterType="Standard">
+		update standard set std_num=#{stdNum},zhname=#{zhname},`version`=#{version},`keys`=#{keys},release_date=#{releaseDate},impl_date=#{implDate},package_path=#{packagePath}
+		where std_num=#{stdNum}
+	</update>
+	<delete id="del" parameterType="Integer">
+		delete from standard where id=#{id}
+	</delete>
+</mapper>
