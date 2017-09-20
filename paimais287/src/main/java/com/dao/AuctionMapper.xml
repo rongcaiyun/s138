@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.AuctionMapper">
+	<select id="getAuctionList" parameterType="Auction" resultType="Auction">
+		select * from auction 
+		<where>
+			<if test="auctionName!=null and auctionName.length>0">
+				auctionName like concat('%',#{auctionName},'%')
+			</if>
+			<if test="auctionDesc!=null and auctionDesc.length>0">
+				and auctionDesc like concat('%',#{auctionDesc},'%')
+			</if>
+			<if test="auctionStartTime!=null and auctionStartTime.length>0">
+				and auctionStartTime=#{auctionStartTime}
+			</if>
+			<if test="auctionEndTime!=null and auctionEndTime.length>0">
+				and auctionEndTime=#{auctionEndTime}
+			</if>
+			<if test="auctionStartPrice!=0.0 and auctionStartPrice!=null">
+				and auctionStartPrice=#{auctionStartPrice}
+			</if>
+		</where>
+	</select>
+	<select id="getAuctionById" parameterType="int" resultType="Auction">
+		select * from auction where auctionId=#{id}
+	</select>
+	<select id="getMaxAuctionId" resultType="int">
+		select max(auctionId) from auction
+	</select>
+	<insert id="addAuction" parameterType="Auction">
+		insert into auction values(#{auctionId},#{auctionName},#{auctionStartPrice},#{auctionUpSet},#{auctionStartTime},#{auctionEndTime},#{auctionPic},#{auctionPicType},#{auctionDesc})
+	</insert>
+	<select id="getNotEndResult" resultMap="getNotEndResult">
+		SELECT ac.`auctionId`,ac.`auctionName`,ac.`auctionStartTime`,
+		ac.`auctionEndTime`,ac.`auctionStartPrice`,
+		au.`userName`,ar.`auctionPrice` FROM auction ac 
+		INNER JOIN auctionrecord ar
+		ON ac.`auctionId`=ar.`auctionId` 
+		INNER JOIN auctionuser au 
+		ON au.`userId`=ar.`userId` 
+		WHERE ac.`auctionEndTime`>NOW()
+	</select>
+	<resultMap type="Auction" id="getNotEndResult">
+		<id property="auctionId" column="auctionId"/>
+		<result property="auctionName" column="auctionName"/>
+		<result property="auctionStartTime" column="auctionStartTime"/>
+		<result property="auctionEndTime" column="auctionEndTime"/>
+		<result property="auctionStartPrice" column="auctionStartPrice"/>
+		<collection property="auctionRecords" ofType="AuctionRecord">
+			<result property="auctionPrice" column="auctionPrice"/>
+			<association property="auctionUser" javaType="AuctionUser">
+				<result property="userName" column="userName"/>
+			</association>
+		</collection>
+	</resultMap>
+</mapper>

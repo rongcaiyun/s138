@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.AuctionRecordMapper">
+	<select id="getAuctionRecordById" parameterType="int" resultMap="getRecord">
+		SELECT ar.id,ar.`auctionTime`,ar.`auctionPrice`,au.`userName` 
+ 	FROM auctionrecord ar INNER JOIN auctionuser au ON
+	ar.`userId`=au.`userId` 
+	WHERE ar.`auctionId`=#{id}
+	ORDER BY auctionPrice DESC
+	</select>
+	<resultMap type="AuctionRecord" id="getRecord">
+		<id property="id" column="id"/>
+		<result property="auctionTime" column="auctionTime"/>
+		<result property="auctionPrice" column="auctionPrice"/>
+		<association property="auctionUser" javaType="AuctionUser">
+			<result property="userName" column="userName"/>
+		</association>
+	</resultMap>
+	<insert id="save" parameterType="AuctionRecord">
+		insert into AuctionRecord values(null,#{auctionUser.userId},#{auction.auctionId},#{auctionTime},#{auctionPrice})
+	</insert>
+	<!-- 查询最高出价记录 -->
+	<select id="getMaxPrice" parameterType="int" resultType="AuctionRecord">
+		select * from auctionRecord ar where ar.auctionId=#{id} order by auctionPrice desc limit 1
+	</select>
+	<!-- 查看拍卖结果 -->
+	<select id="getAuctionEndResult" resultMap="getEndResult">
+		SELECT ar.id,ac.`auctionName`,ac.`auctionStartTime`,ac.`auctionEndTime`,
+		ac.`auctionStartPrice`,ar.`auctionPrice`,
+		au.`userName` FROM auctionrecord ar  INNER JOIN auction ac
+		ON ac.`auctionId`=ar.`auctionId`
+		INNER JOIN auctionuser au 
+		ON ar.`userId`=au.`userId` 
+		WHERE ac.`auctionEndTime` &lt; NOW() AND ar.`auctionPrice`=(SELECT MAX(auctionPrice) FROM auctionrecord 
+		WHERE auctionId=ac.`auctionId`)
+	</select>
+	<resultMap type="AuctionRecord" id="getEndResult">
+		<id property="id" column="id"/>
+		<result property="auctionPrice" column="auctionPrice"/>
+		<association property="auction" javaType="Auction">
+			<result property="auctionName" column="auctionName"/>
+			<result property="auctionStartTime" column="auctionStartTime"/>
+			<result property="auctionEndTime" column="auctionEndTime"/>
+			<result property="auctionStartPrice" column="auctionStartPrice"/>
+		</association>
+		<association property="auctionUser" javaType="AuctionUser">
+			<result property="userName" column="userName"/>
+		</association>
+	</resultMap>
+	
+</mapper>
