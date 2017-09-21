@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-9-20 11:25:29 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.entity.Xueshihou" table="XUESHIHOU">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" not-null="true"/>
+            <generator class="sequence">
+            	<param name="sequence">seq_xueshihou</param>
+            </generator>
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" not-null="true" length="20"/>
+        </property>
+        <property name="pwd" type="java.lang.String">
+            <column name="PWD" length="20" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>
